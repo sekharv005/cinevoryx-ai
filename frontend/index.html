@@ -1,0 +1,490 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0b1020">
+
+  <meta
+    name="description"
+    content="Cinevoryx AI — an intelligent movie discovery and research assistant powered by Gemini and TMDB."
+  >
+
+  <title>Cinevoryx AI | Movie Discovery</title>
+
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+  <div class="app">
+
+    <!-- NAVIGATION -->
+    <header class="navbar">
+      <a class="brand" href="/">
+        <span class="brand-icon">✦</span>
+        <span>CINEVORYX <b>AI</b></span>
+      </a>
+
+      <nav class="nav-actions" aria-label="Information">
+        <button
+        id="newChatButton"
+        class="nav-button"
+        type="button"
+        >
+    ↻ New Chat
+    </button>
+        <button
+          class="nav-button"
+          type="button"
+          data-panel="developer"
+        >
+          <span aria-hidden="true">👨‍💻</span>
+          About Developer
+        </button>
+
+        <button
+          class="nav-button"
+          type="button"
+          data-panel="agent"
+        >
+          <span aria-hidden="true">✦</span>
+          About Agent
+        </button>
+      </nav>
+    </header>
+
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+
+      <!-- HERO -->
+      <section class="hero">
+        <div class="eyebrow">
+          ✦ YOUR AI MOVIE COMPANION
+        </div>
+
+        <h1>
+          Every great movie starts<br>
+          with a <span>question.</span>
+        </h1>
+
+        <p>
+          Explore films, discover hidden gems, and get
+          movie insights with AI.
+        </p>
+      </section>
+
+
+      <!-- MOVIE DISCOVERY: populated by script.js from TMDB API -->
+      <section class="movie-discovery" id="movieDiscovery" aria-labelledby="discoveryTitle">
+        <div class="discovery-heading">
+          <div>
+            <span class="eyebrow">✦ EXPLORE CINEMA</span>
+            <h2 id="discoveryTitle">Discover movies</h2>
+            <p>Search for a film to see its official poster, rating, and release year.</p>
+          </div>
+        </div>
+
+        <form id="movieSearchForm" class="movie-search-form" role="search">
+          <label class="sr-only" for="movieSearchInput">Search movie titles</label>
+          <input id="movieSearchInput" name="query" type="search"
+                 placeholder="Search movies, e.g. Interstellar"
+                 minlength="1" maxlength="200" autocomplete="off" required>
+          <button id="movieSearchButton" type="submit">Search movies</button>
+        </form>
+
+        <p id="movieSearchStatus" class="movie-search-status" role="status" aria-live="polite"></p>
+        <div id="movieGrid" class="movie-grid" aria-label="Movie search results"></div>
+      </section>
+
+      <!-- MOVIE CHAT -->
+      <section class="chat-panel" aria-label="Movie AI Chat">
+
+        <div
+          id="messages"
+          class="messages"
+          aria-live="polite"
+          aria-relevant="additions text"
+        >
+
+          <div class="message assistant">
+            <div class="avatar" aria-hidden="true">✦</div>
+
+            <div class="bubble">
+              Hey there! I'm Cinevoryx AI.
+
+              Ask me about movies, ratings, runtimes,
+              or what to watch next.
+            </div>
+          </div>
+
+        </div>
+
+
+        <!-- SUGGESTED QUESTIONS -->
+        <div class="suggestions">
+
+          <button
+            class="suggestion"
+            type="button"
+            data-question="Find Interstellar and give me its rating and runtime."
+          >
+            🚀 Interstellar details
+          </button>
+
+          <button
+            class="suggestion"
+            type="button"
+            data-question="Tell me about The Dark Knight."
+          >
+            🦇 The Dark Knight
+          </button>
+
+          <button
+            class="suggestion"
+            type="button"
+            data-question="Find Inception and give me its rating and runtime."
+          >
+            🎥 Inception details
+          </button>
+
+        </div>
+
+
+        <!-- QUESTION INPUT -->
+        <form id="chatForm" class="chat-form">
+
+          <label class="sr-only" for="question">
+            Ask a movie question
+          </label>
+
+          <input
+            id="question"
+            type="text"
+            placeholder="Ask anything about movies..."
+            maxlength="2000"
+            autocomplete="off"
+            required
+          >
+
+          <button id="micButton" class="voice-button" type="button" aria-label="Ask by voice" aria-pressed="false" title="Ask by voice">🎙️</button>
+          <button id="speakButton" class="speak-button" type="button" aria-label="Read last AI answer aloud or stop" aria-pressed="false" title="Read last AI answer aloud">🔊</button>
+          <button id="sendButton" type="submit">
+            Send ➜
+          </button>
+
+        </form>
+
+        <p class="disclaimer">
+          AI responses may contain mistakes.
+          Verify important movie details.
+        </p>
+
+      </section>
+
+    </main>
+
+
+    <!-- FOOTER -->
+    <footer>
+      © 2026 Cinevoryx AI · Explore cinema intelligently.
+    </footer>
+
+  </div>
+
+
+  <!-- ANIMATED INFORMATION PANEL -->
+  <div id="infoOverlay" class="info-overlay" hidden>
+
+    <!-- BACKDROP -->
+    <div
+      class="info-backdrop"
+      data-close-panel
+    ></div>
+
+
+    <!-- SLIDE-IN PANEL -->
+    <aside
+      class="info-panel"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="infoTitle"
+      tabindex="-1"
+    >
+
+      <div class="info-panel-header">
+        <span class="info-panel-label">
+          CINEVORYX / EXPLORE
+        </span>
+
+        <button
+          id="closeInfo"
+          class="close-info"
+          type="button"
+          aria-label="Close information panel"
+        >
+          ✕
+        </button>
+      </div>
+
+
+      <!-- ABOUT DEVELOPER -->
+      <div
+        id="developerInfo"
+        class="info-content"
+        hidden
+      >
+
+        <div class="info-icon">👨‍💻</div>
+
+        <div class="info-eyebrow">
+          THE ENGINEER BEHIND THE EXPERIENCE
+        </div>
+
+        <h2 id="infoTitle">
+          About Developer
+        </h2>
+
+        <h3>Sekhar Vegisetti</h3>
+
+        <p class="info-role">
+          Aspiring AI Engineer · Generative AI Developer
+        </p>
+
+        <p>
+          B.Tech graduate in Computer Science and
+          Engineering (Artificial Intelligence &
+          Machine Learning), with a strong interest
+          in designing and developing intelligent
+          software applications.
+        </p>
+
+        <p>
+          Focused on Python-based development,
+          large language models, generative AI,
+          intelligent agents, API integration,
+          and practical AI engineering.
+        </p>
+
+        <p>
+          Experienced through hands-on projects
+          involving LLM-powered applications,
+          structured function calling, backend
+          development, and integration of AI
+          models with external data services.
+        </p>
+
+
+        <!-- TECHNICAL SKILLS -->
+        <h4>Technical Expertise</h4>
+
+        <div class="info-tags">
+          <span>Python</span>
+          <span>Object-Oriented Programming</span>
+          <span>Generative AI</span>
+          <span>Large Language Models</span>
+          <span>AI Agents</span>
+          <span>Prompt Engineering</span>
+          <span>FastAPI</span>
+          <span>REST APIs</span>
+          <span>LangChain</span>
+          <span>LangGraph</span>
+          <span>HTML5</span>
+          <span>CSS3</span>
+          <span>JavaScript</span>
+          <span>Git & GitHub</span>
+        </div>
+
+
+        <!-- ENGINEERING FOCUS -->
+        <div class="info-highlight">
+          <strong>Engineering Focus</strong>
+
+          <p>
+            Building reliable, tool-enabled AI
+            applications that combine language
+            model reasoning, real-world APIs,
+            backend services, and intuitive
+            user experiences.
+          </p>
+        </div>
+
+      </div>
+
+
+      <!-- ABOUT AGENT -->
+      <div
+        id="agentInfo"
+        class="info-content"
+        hidden
+      >
+
+        <div class="info-icon">✦</div>
+
+        <div class="info-eyebrow">
+          THE TECHNOLOGY BEHIND CINEVORYX
+        </div>
+
+        <h2 id="agentTitle">
+          About Cinevoryx AI
+        </h2>
+
+        <p>
+          Cinevoryx AI is an intelligent movie
+          research and discovery assistant
+          powered by Google Gemini and the
+          TMDB movie database.
+        </p>
+
+        <p>
+          The application uses an agentic AI
+          workflow in which a large language
+          model interprets user requests,
+          selects appropriate tools, retrieves
+          movie information, and generates
+          natural-language responses.
+        </p>
+
+
+        <!-- ARCHITECTURE -->
+        <h4>System Architecture</h4>
+
+        <div class="architecture">
+
+          <div>
+            Frontend
+            <strong>HTML5 · CSS3 · JavaScript</strong>
+          </div>
+
+          <span>↓</span>
+
+          <div>
+            Backend API
+            <strong>Python · FastAPI</strong>
+          </div>
+
+          <span>↓</span>
+
+          <div>
+            AI Reasoning Engine
+            <strong>Google Gemini</strong>
+          </div>
+
+          <span>↓</span>
+
+          <div>
+            Agent Tool Execution
+            <strong>Function Calling · Python</strong>
+          </div>
+
+          <span>↓</span>
+
+          <div>
+            Movie Information
+            <strong>TMDB REST API</strong>
+          </div>
+
+        </div>
+
+
+        <!-- TECHNOLOGY STACK -->
+        <h4>Technology Stack</h4>
+
+        <div class="info-tags">
+          <span>Python</span>
+          <span>FastAPI</span>
+          <span>Google Gemini</span>
+          <span>TMDB API</span>
+          <span>JavaScript</span>
+          <span>HTML5</span>
+          <span>CSS3</span>
+          <span>Pydantic</span>
+          <span>REST APIs</span>
+          <span>Function Calling</span>
+          <span>Prompt Engineering</span>
+        </div>
+
+
+        <!-- CAPABILITIES -->
+        <h4>Engineering Capabilities</h4>
+
+        <div class="feature-list">
+
+          <div>
+            <strong>LLM-Powered Tool Calling</strong>
+            <p>
+              Gemini dynamically selects
+              movie search and information
+              retrieval tools based on
+              natural-language queries.
+            </p>
+          </div>
+
+          <div>
+            <strong>Multi-Step Agent Execution</strong>
+            <p>
+              An iterative agent workflow
+              coordinates AI reasoning,
+              tool execution, and response
+              generation.
+            </p>
+          </div>
+
+          <div>
+            <strong>RESTful Backend Integration</strong>
+            <p>
+              FastAPI connects the browser
+              interface to the Python-based
+              AI agent.
+            </p>
+          </div>
+
+          <div>
+            <strong>Security & Guardrails</strong>
+            <p>
+              Input validation, tool
+              allowlisting, argument
+              verification, iteration limits,
+              and controlled error handling.
+            </p>
+          </div>
+
+          <div>
+            <strong>Agent Evaluation</strong>
+            <p>
+              Basic automated evaluation
+              of answer content, tool
+              selection, argument validity,
+              and execution results.
+            </p>
+          </div>
+
+        </div>
+
+
+        <!-- ADDITIONAL LEARNING -->
+        <div class="info-highlight">
+          <strong>Additional AI Engineering Exploration</strong>
+
+          <p>
+            The broader development project
+            also explores LangChain,
+            LangGraph, conversational memory,
+            and retrieval-augmented generation
+            through separate learning modules.
+          </p>
+        </div>
+
+      </div>
+
+    </aside>
+
+  </div>
+
+
+  <!-- JAVASCRIPT -->
+  <script src="/static/script.js"></script>
+
+</body>
+</html>
